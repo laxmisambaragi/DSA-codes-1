@@ -1,0 +1,32 @@
+//to check whether the given number is odd or even,of odd add 3 else subtract 1//
+#include<stdio.h>
+void odd_no();
+void even_no();
+int n=1;
+
+int main()
+{
+    odd_no();
+}
+
+void odd_no()
+{
+    if(n <= 10)
+    {
+        printf("%d ", n+3);
+        n++;
+        even_no();
+    }
+    return;
+}
+
+void even_no()
+{
+    if(n <= 10)
+    {
+        printf("%d ", n-1);
+        n++;
+        odd_no();
+    }
+    return;
+}
