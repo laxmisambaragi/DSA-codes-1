@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define TABLE_SIZE 10
+
+// Structure for hash table entry
+typedef struct Entry {
+    int key;
+    int value;
+    bool filled;
+} Entry;
+
+// Structure for hash table
+typedef struct HashTable {
+    Entry* table;
+} HashTable;
+
+// Function to create a new hash table
+HashTable* createHashTable() {
+    HashTable* hashTable = (HashTable*)malloc(sizeof(HashTable));
+    hashTable->table = (Entry*)malloc(TABLE_SIZE * sizeof(Entry));
+
+    int i;
+    for (i = 0; i < TABLE_SIZE; i++) {
+        hashTable->table[i].filled = false;
+    }
+
+    return hashTable;
+}
+
+// Hash function
+int hashFunction(int key) {
+    return key % TABLE_SIZE;
+}
+
+// Function to insert an entry into the hash table
+void insert(HashTable* hashTable, int key, int value) {
+    int index = hashFunction(key);
+
+    // Linear probing collision resolution
+    while (hashTable->table[index].filled) {
+        index = (index + 1) % TABLE_SIZE;
+    }
+
+    hashTable->table[index].key = key;
+    hashTable->table[index].value = value;
+    hashTable->table[index].filled = true;
+}
+
+// Function to search for a key in the hash table
+int search(HashTable* hashTable, int key) {
+    int index = hashFunction(key);
+
+    // Linear probing collision resolution
+    while (hashTable->table[index].filled) {
+        if (hashTable->table[index].key == key) {
+            return hashTable->table[index].value;
+        }
+        index = (index + 1) % TABLE_SIZE;
+    }
+
+    return -1; // Key not found
+}
+
+int main() {
+    HashTable* hashTable = createHashTable();
+
+    insert(hashTable, 5, 10);
+    insert(hashTable, 15, 20);
+    insert(hashTable, 25, 30);
+    insert(hashTable, 7, 40);
+
+    int value = search(hashTable, 15);
+    if (value != -1) {
+        printf("Value for key 15: %d\n", value);
+    } else {
+        printf("Key 15 not found\n");
+    }
+
+    return 0;
+}
