@@ -1,0 +1,112 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define MAX_URL_LENGTH 100
+#define MAX_HISTORY_SIZE 10
+
+// Structure for a node in the stack
+typedef struct Node {
+    char url[MAX_URL_LENGTH];
+    struct Node* next;
+} Node;
+
+// Structure for the stack
+typedef struct {
+    Node* top;
+} Stack;
+
+// Function to initialize the stack
+void initialize(Stack* stack) {
+    stack->top = NULL;
+}
+
+// Function to check if the stack is empty
+bool isEmpty(Stack* stack) {
+    return stack->top == NULL;
+}
+
+// Function to push a URL onto the stack
+void push(Stack* stack, const char* url) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    strncpy(newNode->url, url, MAX_URL_LENGTH);
+    newNode->next = stack->top;
+    stack->top = newNode;
+}
+
+// Function to pop the top URL from the stack
+void pop(Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Browsing history is empty.\n");
+        return;
+    }
+    Node* temp = stack->top;
+    stack->top = stack->top->next;
+    free(temp);
+}
+
+// Function to display the browsing history
+void displayHistory(Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Browsing history is empty.\n");
+        return;
+    }
+    printf("Browsing History:\n");
+    Node* current = stack->top;
+    int count = 1;
+    while (current != NULL) {
+        printf("%d. %s\n", count, current->url);
+        current = current->next;
+        count++;
+    }
+}
+
+int main() {
+    Stack historyStack;
+    initialize(&historyStack);
+
+    char currentURL[MAX_URL_LENGTH];
+    char command;
+
+    while (true) {
+        printf("\n[B]rowse [H]istory [Q]uit: ");
+        scanf(" %c", &command);
+
+        switch (command) {
+            case 'B':
+            case 'b':
+                printf("Enter URL: ");
+                scanf("%s", currentURL);
+
+                // Push the current URL onto the stack
+                push(&historyStack, currentURL);
+
+                // Limit the size of history stack to MAX_HISTORY_SIZE
+                while (historyStack.top->next != NULL && historyStack.top->next->next != NULL) {
+                    pop(&historyStack);
+                }
+
+                printf("Browsing %s...\n", currentURL);
+                break;
+
+            case 'H':
+            case 'h':
+                // Display the browsing history
+                displayHistory(&historyStack);
+                break;
+
+            case 'Q':
+            case 'q':
+                // Quit the program
+                printf("Exiting...\n");
+                exit(0);
+
+            default:
+                printf("Invalid command. Please try again.\n");
+                break;
+        }
+    }
+
+    return 0;
+}
