@@ -1,0 +1,111 @@
+//this code is written for issuing the tickets at railways
+#include <stdio.h>
+#include <stdlib.h>
+
+// Structure to represent a node in the queue
+typedef struct Node {
+    int ticketNumber;
+    struct Node* next;
+} Node;
+
+// Structure to represent the queue
+typedef struct Queue {
+    Node* front;
+    Node* rear;
+} Queue;
+
+// Function to create a new node
+Node* createNode(int ticketNumber) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->ticketNumber = ticketNumber;
+    newNode->next = NULL;
+    return newNode;
+}
+
+// Function to create an empty queue
+Queue* createQueue() {
+    Queue* queue = (Queue*)malloc(sizeof(Queue));
+    queue->front = queue->rear = NULL;
+    return queue;
+}
+
+// Function to check if the queue is empty
+int isEmpty(Queue* queue) {
+    return queue->front == NULL;
+}
+
+// Function to enqueue a new ticket
+void enqueue(Queue* queue, int ticketNumber) {
+    Node* newNode = createNode(ticketNumber);
+    if (isEmpty(queue)) {
+        queue->front = queue->rear = newNode;
+    } else {
+        queue->rear->next = newNode;
+        queue->rear = newNode;
+    }
+    printf("Ticket with number %d has been added to the queue.\n", ticketNumber);
+}
+
+// Function to dequeue a ticket
+int dequeue(Queue* queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty. No tickets to dequeue.\n");
+        return -1;
+    }
+    Node* temp = queue->front;
+    int ticketNumber = temp->ticketNumber;
+    queue->front = queue->front->next;
+    if (queue->front == NULL) {
+        queue->rear = NULL;
+    }
+    free(temp);
+    return ticketNumber;
+}
+
+// Function to display the contents of the queue
+void displayQueue(Queue* queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty.\n");
+        return;
+    }
+    Node* temp = queue->front;
+    printf("Tickets in the queue: ");
+    while (temp != NULL) {
+        printf("%d ", temp->ticketNumber);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+// Function to free the memory allocated for the queue
+void freeQueue(Queue* queue) {
+    Node* temp = queue->front;
+    while (temp != NULL) {
+        Node* next = temp->next;
+        free(temp);
+        temp = next;
+    }
+    free(queue);
+}
+
+int main() {
+    Queue* ticketQueue = createQueue();
+
+    enqueue(ticketQueue, 1);
+    enqueue(ticketQueue, 2);
+    enqueue(ticketQueue, 3);
+    enqueue(ticketQueue, 4);
+
+    displayQueue(ticketQueue);
+
+    int dequeuedTicket = dequeue(ticketQueue);
+    if (dequeuedTicket != -1) {
+        printf("Ticket with number %d has been dequeued.\n", dequeuedTicket);
+    }
+
+    displayQueue(ticketQueue);
+
+    freeQueue(ticketQueue);
+
+    return 0;
+}
